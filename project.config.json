@@ -18,8 +18,8 @@
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
     "compileHotReLoad": false,
-    "useMultiFrameRuntime": false,
-    "useApiHook": true,
+    "useMultiFrameRuntime": true,
+    "useApiHook": false,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -32,9 +32,9 @@
     "packNpmRelationList": []
   },
   "compileType": "game",
-  "libVersion": "2.12.0",
-  "appid": "wxcf8fa72e9f75f01b",
-  "projectname": "tinyracing-wasm-converted",
+  "libVersion": "2.12.2",
+  "appid": "wx1a6e8263a3437579",
+  "projectname": "wechat",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "condition": {

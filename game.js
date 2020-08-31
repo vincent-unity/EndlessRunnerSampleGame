@@ -1,6 +1,8 @@
 require('./weapp-adapter');
-
-GameGlobal.WebAssembly = WXWebAssembly;
+require('./UnityLoader.js');
+// GameGlobal.WebAssembly = WXWebAssembly;
+var brotli = require('brotli');
+var decompress = require('./brotli.js/decompress.js');
 
 canvas.id = "";
 canvas.style.width = window.innerWidth * window.devicePixelRatio //获取屏幕实际宽度
@@ -52,8 +54,9 @@ var gameInstance = {
   compatibilityCheck: undefined,
   Module: {
     IsWxGame: true,
-    preLoaDataPath: 'wasm_pub_empty_h5.data.unityweb.bin',
-    wasmPath: 'wasm_pub_empty_h5.wasm.code.unityweb.bin',
+    preLoaDataPath: 'wasm_pub_empty_h5.data.unityweb.bin',//.bin
+    wasmPath: 'wasm_pub_empty_h5.wasm.br.bin',//.bin
+    // wasmBin:"",
     graphicsAPI: ["WebGL 2.0", "WebGL 1.0"],
     onAbort: function(what){
       if (what !== undefined) {
@@ -91,18 +94,81 @@ var gameInstance = {
   },
 };
 
-gameInstance.Module.gameInstance = gameInstance;
-gameInstance.popup = function (message, callbacks) { return UnityLoader.Error.popup(gameInstance, message, callbacks); };
-// gameInstance.Module.postRun.push(function() {
-//   gameInstance.onProgress(gameInstance, 1);
-// });
-GameGlobal.Module = gameInstance.Module
-var framework = require('./wasm_pub_empty_h5.wasm.framework.unityweb.js');
-framework.start(GameGlobal.Module)
-var gl = canvas.getContext("webgl");
-gl.scissor(0, 0, canvas.width, canvas.height);
+GameGlobal.cdn = "http://10.86.98.91:8080/";
+gameInstance.Module["preLoaDataPath"] = 'wasm_pub_empty_h5.data.unityweb';
+gameInstance.Module["wasmPath"] = 'wasm_pub_empty_h5.wasm.br.bin';
+var dataLoaded=0, codeLoaded=0;
 
-var data = wx.onWindowResize(function(res){
-  console.log('onWindowResize', res)
-})
-// wx.setPreferredFramesPerSecond(30)
+wx.request({
+  url: cdn + gameInstance.Module["wasmPath"],
+  responseType: 'arraybuffer',
+  success: ({ data }) => {
+    console.log(data)
+    codeLoaded =1;
+    gameInstance.Module["wasmBin"] = brotli.decompress(data);
+    // gameInstance.Module["wasmBin"] = GameGlobal.UnityLoader.Compression.brotli.decompress(data);
+    console.log("wasm bin loaded  ");
+    if(dataLoaded){
+      startUnity();
+    }
+  }
+});
+
+// wx.request({
+//   url: cdn + gameInstance.Module["preLoaDataPath"],
+//   responseType: 'arraybuffer',
+//   success: ({ data }) => {
+//     console.log(data)
+//     dataLoaded =1;
+//     gameInstance.Module["rawData"] = data;
+//     console.log("raw Data loaded  ");
+//     if(codeLoaded){
+//       startUnity();
+//     }
+//   }
+// });
+
+wx.downloadFile({
+  url: cdn + gameInstance.Module["preLoaDataPath"],
+  success:(res)=>{
+    if(res.statusCode == 200){
+      var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["preLoaDataPath"]);
+      gameInstance.Module["preLoaDataPath"] = path;
+      dataLoaded =1;
+      console.log("dataLoaded:  " + path);
+      if(codeLoaded){
+        startUnity();
+      }
+    }
+  }
+});
+
+// wx.downloadFile({
+//   url: cdn + gameInstance.Module["wasmPath"],
+//   success:(res)=>{
+//     if(res.statusCode == 200){
+
+//       // var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["wasmPath"]);
+//       gameInstance.Module["wasmBin"] = decompress(wx.getFileSystemManager().readFileSync(res.tempFilePath));
+//       // gameInstance.Module["wasmPath"] = path;
+//       codeLoaded =1;
+//       console.log("codeLoaded:  " + path);
+//       if(dataLoaded){
+//         startUnity();
+//       }
+//     }
+//   }
+// });
+
+function startUnity(){
+  gameInstance.Module.gameInstance = gameInstance;
+  gameInstance.popup = function (message, callbacks) { return UnityLoader.Error.popup(gameInstance, message, callbacks); };
+
+  GameGlobal.Module = gameInstance.Module
+  var framework = require('./wasm_pub_empty_h5.wasm.framework.unityweb.js');
+  // const { Module } = require('module');
+  framework.start(GameGlobal.Module)
+  var gl = canvas.getContext("webgl");
+  gl.scissor(0, 0, canvas.width, canvas.height);
+}
+// startUnity();
