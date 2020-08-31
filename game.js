@@ -1,8 +1,8 @@
 require('./weapp-adapter');
 require('./UnityLoader.js');
-// GameGlobal.WebAssembly = WXWebAssembly;
+GameGlobal.WebAssembly = WXWebAssembly;
 var brotli = require('brotli');
-var decompress = require('./brotli.js/decompress.js');
+var decompress = require('./brotli/dec/decode.js').BrotliDecompressBuffer;
 
 canvas.id = "";
 canvas.style.width = window.innerWidth * window.devicePixelRatio //获取屏幕实际宽度
@@ -105,7 +105,7 @@ wx.request({
   success: ({ data }) => {
     console.log(data)
     codeLoaded =1;
-    gameInstance.Module["wasmBin"] = brotli.decompress(data);
+    gameInstance.Module["wasmBin"] = decompress(data);
     // gameInstance.Module["wasmBin"] = GameGlobal.UnityLoader.Compression.brotli.decompress(data);
     console.log("wasm bin loaded  ");
     if(dataLoaded){
