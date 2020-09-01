@@ -1145,14 +1145,15 @@ exports.start=(function (Module) {
                         return WebAssembly.instantiate(binary, info)
                     } else {
                         console.log("////////////////WebAssembly.instantiate///////////////") 
-                        if(Module["wasmBin"] ){
+                        if(Module["wasmBin"]){
                             return WebAssembly.instantiate(Module["wasmBin"], info);
                         }
-                        if(typeof Module["wasmPath"] == "string" && (Module["wasmPath"].startsWith("wxfile") || Module["wasmPath"].startsWith("http"))){
-                            var bin = wx.getFileSystemManager().readFileSync( Module["wasmPath"]);
-                            return WebAssembly.instantiate(bin, info);
-                        }
-                        return WebAssembly.instantiate(Module.wasmPath, info)
+                        // if(typeof Module["wasmPath"] == "string" && (Module["wasmPath"].startsWith("wxfile") || Module["wasmPath"].startsWith("http"))){
+                        //     var bin = wx.getFileSystemManager().readFileSync( Module["wasmPath"]);
+                        //     return WebAssembly.instantiate(bin, info);
+                        // }
+                        console.log("Module[wasmPath]:  " + Module["wasmPath"]);
+                        return WebAssembly.instantiate(Module["wasmPath"], info)
                     }
                 })).then(receiver).catch((function (reason) {
                     Module["printErr"]("failed to asynchronously prepare wasm: " + reason);

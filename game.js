@@ -1,8 +1,8 @@
 require('./weapp-adapter');
 require('./UnityLoader.js');
 GameGlobal.WebAssembly = WXWebAssembly;
-var brotli = require('brotli');
-var decompress = require('./brotli/dec/decode.js').BrotliDecompressBuffer;
+// var brotli = require('brotli');
+// var decompress = require('./brotli/dec/decode.js').BrotliDecompressBuffer;
 
 canvas.id = "";
 canvas.style.width = window.innerWidth * window.devicePixelRatio //获取屏幕实际宽度
@@ -45,7 +45,6 @@ SystemInfo: {
 }
 
 };
-
 
 
 var gameInstance = {
@@ -96,69 +95,74 @@ var gameInstance = {
 
 GameGlobal.cdn = "http://10.86.98.91:8080/";
 gameInstance.Module["preLoaDataPath"] = 'wasm_pub_empty_h5.data.unityweb';
-gameInstance.Module["wasmPath"] = 'wasm_pub_empty_h5.wasm.br.bin';
+gameInstance.Module["wasmPath"] = 'wasm_pub_empty_h5.wasm.br.bin';//wasm_pub_empty_h5.wasm.br.bin // wasm_pub_empty_h5.wasm.code.unityweb.bin
 var dataLoaded=0, codeLoaded=0;
 
+// wx.request({
+//   url: cdn + gameInstance.Module["wasmPath"],
+//   responseType: 'arraybuffer',
+//   timeout:10000,
+//   success: ({ data }) => {
+//     console.log("data : \n" + data)
+//     codeLoaded =1;
+//     gameInstance.Module["wasmBin"] = data;//decompress(data);
+//     // gameInstance.Module["wasmBin"] = GameGlobal.UnityLoader.Compression.brotli.decompress(data);
+//     console.log("wasm bin loaded  ");
+//     if(dataLoaded){
+//       startUnity();
+//     }
+//   },
+//   fail:function(res){
+//     console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+//     console.log("res.errorMsg: " + res.errMsg);
+//     console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+//   }
+// });
+
 wx.request({
-  url: cdn + gameInstance.Module["wasmPath"],
+  url: cdn + gameInstance.Module["preLoaDataPath"],
   responseType: 'arraybuffer',
+  timeout: 10000,
   success: ({ data }) => {
-    console.log(data)
-    codeLoaded =1;
-    gameInstance.Module["wasmBin"] = decompress(data);
-    // gameInstance.Module["wasmBin"] = GameGlobal.UnityLoader.Compression.brotli.decompress(data);
-    console.log("wasm bin loaded  ");
-    if(dataLoaded){
+    dataLoaded =1;
+    gameInstance.Module["rawData"] = data;
+    console.log("raw Data loaded  ");
+    if(codeLoaded){
       startUnity();
     }
   }
 });
 
-// wx.request({
+// wx.downloadFile({
 //   url: cdn + gameInstance.Module["preLoaDataPath"],
-//   responseType: 'arraybuffer',
-//   success: ({ data }) => {
-//     console.log(data)
-//     dataLoaded =1;
-//     gameInstance.Module["rawData"] = data;
-//     console.log("raw Data loaded  ");
-//     if(codeLoaded){
-//       startUnity();
+//   success:(res)=>{
+//     if(res.statusCode == 200){
+//       var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["preLoaDataPath"]);
+//       gameInstance.Module["preLoaDataPath"] = path;
+//       dataLoaded =1;
+//       console.log("dataLoaded:  " + path);
+//       // if(codeLoaded){
+//         startUnity();
+//       // }
 //     }
 //   }
 // });
 
 wx.downloadFile({
-  url: cdn + gameInstance.Module["preLoaDataPath"],
+  url: cdn + gameInstance.Module["wasmPath"],
   success:(res)=>{
     if(res.statusCode == 200){
-      var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["preLoaDataPath"]);
-      gameInstance.Module["preLoaDataPath"] = path;
-      dataLoaded =1;
-      console.log("dataLoaded:  " + path);
-      if(codeLoaded){
+
+      var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["wasmPath"]);
+      gameInstance.Module["wasmPath"] = path;
+      codeLoaded =1;
+      console.log("codeLoaded:  " + path);
+      if(dataLoaded){
         startUnity();
       }
     }
   }
 });
-
-// wx.downloadFile({
-//   url: cdn + gameInstance.Module["wasmPath"],
-//   success:(res)=>{
-//     if(res.statusCode == 200){
-
-//       // var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["wasmPath"]);
-//       gameInstance.Module["wasmBin"] = decompress(wx.getFileSystemManager().readFileSync(res.tempFilePath));
-//       // gameInstance.Module["wasmPath"] = path;
-//       codeLoaded =1;
-//       console.log("codeLoaded:  " + path);
-//       if(dataLoaded){
-//         startUnity();
-//       }
-//     }
-//   }
-// });
 
 function startUnity(){
   gameInstance.Module.gameInstance = gameInstance;
