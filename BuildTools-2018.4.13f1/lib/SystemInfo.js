@@ -31,19 +31,40 @@ var LibrarySystemInfoWebGL = {
 
 	JS_SystemInfo_GetCurrentCanvasWidth: function() 
 	{
-		return Module['canvas'].clientWidth;
+		if (!Module.IsWxGame)
+		{
+			return Module['canvas'].clientWidth;	
+		}
+		else
+		{
+			return Module['canvas'].width;	
+		}
 	},
 
 	JS_SystemInfo_GetCurrentCanvasHeight: function() 
 	{
-		return Module['canvas'].clientHeight;
+		if (!Module.IsWxGame)
+		{
+			return Module['canvas'].clientHeight;	
+		}
+		else
+		{
+			return Module['canvas'].height;	
+		}
 	},
 
 	JS_SystemInfo_GetDocumentURL: function(buffer, bufferSize) 
 	{
-		if (buffer)
+		if (!Module.IsWxGame)
+		{
+			if (buffer)
 			stringToUTF8(document.URL, buffer, bufferSize);
-		return lengthBytesUTF8(document.URL);
+		    return lengthBytesUTF8(document.URL);
+		}
+		else
+		{
+			return 0;
+		}
 	},
 
 	JS_SystemInfo_GetStreamingAssetsURL: function(buffer, bufferSize) 
