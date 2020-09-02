@@ -2114,7 +2114,14 @@ function integrateWasmJS() {
       if (Module['readBinary']) {
         return Module['readBinary'](wasmBinaryFile);
       } else {
-        throw "on the web, we need the wasm binary to be preloaded and set on Module['wasmBinary']. emcc.py will do that for you when generating HTML (but not JS)";
+        if (!Module.IsWxGame)
+        {
+          throw "on the web, we need the wasm binary to be preloaded and set on Module['wasmBinary']. emcc.py will do that for you when generating HTML (but not JS)";
+        } 
+        else
+        {
+           return
+        }
       }
     }
     catch (err) {

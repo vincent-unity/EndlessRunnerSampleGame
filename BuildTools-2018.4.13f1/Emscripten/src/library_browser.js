@@ -649,6 +649,10 @@ var LibraryBrowser = {
     },
 
     setCanvasSize: function(width, height, noUpdates) {
+      if(typeof Module.IsWxGame != "undefined") {
+        console.log('setCanvasSize wxgame modified');
+        return;
+      }
       var canvas = Module['canvas'];
       Browser.updateCanvasDimensions(canvas, width, height);
       if (!noUpdates) Browser.updateResizeListeners();
