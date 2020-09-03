@@ -18,8 +18,8 @@ require('./' + gameName + '.wasm.framework.unityweb.js')
 
 GameGlobal.Module = {};
 GameGlobal.cdn = "$DEPLOY_URL";// !!!ATTENTION!! please end with "/"
-if(cdn.endsWith("/")){
-  cdn = cdn + "/;"
+if(!cdn.endsWith("/")){
+  cdn = cdn + "/";
 }
 GameGlobal.UnityLoader = {
 SystemInfo: {
