@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import sys
+import brotli
 
 quiet = False
 
@@ -135,7 +136,7 @@ def main():
     wechat_dir = "wechat-default/"
     dst_dir = ''
     project_name = ""
-    orientation = "landscape"
+    orientation = "portrait"
     cdn = ""
 
     # Parse arguments.
@@ -164,13 +165,28 @@ def main():
     if not os.path.exists(dst_dir):
         os.mkdir(dst_dir)
 
-    # Step 4: Modify tiny js file
+    # Step 3: Patch Framework
     frameworkFileName = project_name + ".wasm.framework.unityweb"
     print('frameworkFileName  : ' + frameworkFileName)
     adaptFrameworkFile(src_dir + frameworkFileName, dst_dir + frameworkFileName + ".js")
 
+    # Step 4: Modify WeChat Configs
     copyFolder(wechat_dir,dst_dir)
     modifyWeChatConfigs(getConfigFiles(dst_dir), getWeChatConfigs(project_name, app_id, orientation, cdn))
+
+    # Step 5: Generate Bin Files
+    wasmCodeFile = project_name + ".wasm.code.unityweb"
+    dataFile = project_name + ".data.unityweb"
+    shutil.copyfile(src_dir + wasmCodeFile, dst_dir + wasmCodeFile + ".bin")
+    shutil.copyfile(src_dir + dataFile, dst_dir + dataFile + ".bin")
+
+    # Step 6: Brotli
+    with open(src_dir + wasmCodeFile, 'rb') as codeBin:
+        codeBr = brotli.compress(codeBin.read())
+        fout = open(dst_dir + wasmCodeFile + ".br.bin", "wb")
+        fout.write(codeBr)
+        fout.close()
+    # shutil.move(src_dir + wasmCodeFile + ".br", dst_dir + wasmCodeFile + ".br.bin")
 
 if __name__ == "__main__":
     main()

@@ -155,6 +155,20 @@ var gameInstance = {
   },
 };
 
+function readLargeFile(filePath){
+  var stats = wx.getFileSystemManager().statSync(filePath);
+  var size = stats.size;
+  var resultdata = new ArrayBuffer(size);
+  var offset = 0;
+  var partSize = 8000000;
+  for(var offset = 0; offset < size; offset += partSize) {
+      var toread = Math.min(partSize, size - offset);
+      console.log('read part:', offset, toread);
+      var data = wx.getFileSystemManager().readFileSync(filePath, '', offset, toread);
+      (new Uint8Array(resultdata)).set(new Uint8Array(data), offset);
+  }
+  return resultdata;
+}
 
 function startUnity(){
   gameInstance.Module.gameInstance = gameInstance;
@@ -173,16 +187,17 @@ if(platform == "devtools") {
   startUnity();
 } else {
   var dataLoaded=0, codeLoaded=0;
-  wx.request({
+  wx.downloadFile({
     url: cdn + gameInstance.Module["preLoaDataPath"],
-    responseType: 'arraybuffer',
-    timeout: 10000,
-    success: ({ data }) => {
-      dataLoaded = 1;
-      gameInstance.Module["rawData"] = data;
-      console.log("raw Data loaded  ");
-      if(codeLoaded){
-        startUnity();
+    success:(res)=>{
+      if(res.statusCode == 200){
+        console.log('read data file');
+        gameInstance.Module["rawData"] = readLargeFile(res.tempFilePath);
+        dataLoaded =1;
+        //console.log("dataLoaded:  " + path);
+         if(codeLoaded){
+          startUnity();
+         }
       }
     }
   });
