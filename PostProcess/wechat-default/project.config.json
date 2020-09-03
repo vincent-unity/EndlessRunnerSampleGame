@@ -39,6 +39,10 @@
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [
+      {
+        "type": "suffix",
+        "value": ".bin"
+      }
     ]
   },
   "condition": {

@@ -61,7 +61,7 @@ var gameInstance = {
   Module: {
     IsWxGame: true,
     preLoaDataPath: gameName + '.data.unityweb.bin',//.bin
-    wasmPath: gameName + '.wasm.code.unityweb.br.bin',//.wasm.br.bin // .wasm.code.unityweb.bin
+    wasmPath: gameName + '.wasm.code.unityweb.bin',//.wasm.br.bin // .wasm.code.unityweb.bin
     // wasmBin:"",
     graphicsAPI: ["WebGL 2.0", "WebGL 1.0"],
     onAbort: function(what){

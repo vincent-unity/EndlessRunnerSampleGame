@@ -37,7 +37,7 @@ replaceRules = [
     },
     {
         "old": "document\.URL",
-        "new": '""'
+        "new": 'GameGlobal.cdn'
     },
     {
         "old": "canvas\.style\.setProperty\(",
@@ -181,11 +181,11 @@ def main():
     shutil.copyfile(src_dir + dataFile, dst_dir + dataFile + ".bin")
 
     # Step 6: Brotli
-    with open(src_dir + wasmCodeFile, 'rb') as codeBin:
-        codeBr = brotli.compress(codeBin.read())
-        fout = open(dst_dir + wasmCodeFile + ".br.bin", "wb")
-        fout.write(codeBr)
-        fout.close()
+    # with open(src_dir + wasmCodeFile, 'rb') as codeBin:
+    #     codeBr = brotli.compress(codeBin.read())
+    #     fout = open(dst_dir + wasmCodeFile + ".br.bin", "wb")
+    #     fout.write(codeBr)
+    #     fout.close()
     # shutil.move(src_dir + wasmCodeFile + ".br", dst_dir + wasmCodeFile + ".br.bin")
 
 if __name__ == "__main__":
