@@ -206,10 +206,9 @@ if(platform == "devtools") {
     url: cdn + gameInstance.Module["wasmPath"],
     success:(res)=>{
       if(res.statusCode == 200){
-        var path = wx.getFileSystemManager().saveFileSync(res.tempFilePath, wx.env.USER_DATA_PATH+"/"+gameInstance.Module["wasmPath"]);
-        gameInstance.Module["wasmPath"] = path;
+        gameInstance.Module["wasmBin"] = readLargeFile(res.tempFilePath);
         codeLoaded = 1;
-        console.log("codeLoaded:  " + path);
+        console.log("codeLoaded:  ");
         if(dataLoaded){
           startUnity();
         }
