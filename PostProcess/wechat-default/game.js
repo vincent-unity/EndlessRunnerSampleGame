@@ -17,6 +17,10 @@ var gameName = "$GAME_NAME";
 require('./' + gameName + '.wasm.framework.unityweb.js')
 
 GameGlobal.Module = {};
+GameGlobal.cdn = "$DEPLOY_URL";// !!!ATTENTION!! please end with "/"
+if(cdn.endsWith("/")){
+  cdn = cdn + "/;"
+}
 GameGlobal.UnityLoader = {
 SystemInfo: {
 
@@ -132,8 +136,8 @@ var gameInstance = {
     Jobs: {},
     canvas: canvas,
     buildDownloadProgress: {},
-    resolveBuildUrl: function (buildUrl) { return buildUrl.match(/(http|https|ftp|file):\/\//) ? buildUrl : url.substring(0, url.lastIndexOf("/") + 1) + buildUrl; },
-    streamingAssetsUrl: function () { return resolveURL(this.resolveBuildUrl("../StreamingAssets")) },
+    resolveBuildUrl: function (buildUrl) { return buildUrl.match(/(http|https|ftp|file):\/\//) ? buildUrl : cdn.substring(0, cdn.lastIndexOf("/") + 1) + buildUrl; },
+    streamingAssetsUrl: function () { return this.resolveBuildUrl("StreamingAssets") },
     pthreadMainPrefixURL: "Build/",
     webglContextAttributes: 
     {
@@ -151,7 +155,6 @@ var gameInstance = {
   },
 };
 
-GameGlobal.cdn = "$DEPLOY_URL";// !!!ATTENTION!! please end with "/"
 
 function startUnity(){
   gameInstance.Module.gameInstance = gameInstance;

@@ -54,10 +54,6 @@ replaceRules = [
         "old": "return *WebAssembly\.instantiate *\( *binary *, *info *\)",
         "new": 'if(Module["wasmBin"]){return WebAssembly.instantiate(Module["wasmBin"], info);}return WebAssembly.instantiate(Module["wasmPath"], info)'
     },
-    # {
-    #     "old": 'function *_emscripten_set_canvas_element_size_calling_thread.*return *0[\n\r\t\s ]*\} *function *_emscripten_set_canvas_element_size_main_thread',
-    #     "new": 'function _emscripten_set_canvas_element_size_calling_thread(target, width, height) {return -4;}function _emscripten_set_canvas_element_size_main_thread'
-    # },
     {
         "old": 'var *autoResizeViewport *= *false;',
         "new": 'var autoResizeViewport = false;return -4;'
@@ -70,28 +66,6 @@ replaceRules = [
         "old": 'function *getBinary\( *\) *\{',
         "new": 'function getBinary() {return;'
     },
-    # {
-    #     "old": 'FS.mkdir.*idbfs.*FS.mount.*idbfs\" *\) *[;]?',
-    #     "new": '''
-    #     FS.mkdir("/idbfs");FS.mount(IDBFS, {}, "/idbfs");
-    #     var rawdata = "";
-    #     if (Module["rawData"]) {rawdata = Module["rawData"];} else {rawdata = wx.getFileSystemManager().readFileSync(Module["preLoaDataPath"]);}
-    #     var data = new Uint8Array(rawdata);console.log("data", data);var view = new DataView(rawdata);var pos = 0;var prefix = "UnityWebData1.0 ";
-    #     console.log("prefix",data.subarray(pos, pos + prefix.length),String.fromCharCode.apply(null,data.subarray(pos, pos + prefix.length)),"end...");
-    #     if (!String.fromCharCode.apply(null,data.subarray(pos, pos + prefix.length)) == prefix)throw "unknown data format";
-    #     pos += prefix.length;var headerSize = view.getUint32(pos, true);pos += 4;
-    #     while (pos < headerSize) {
-    #         var offset = view.getUint32(pos, true);pos += 4;var size = view.getUint32(pos, true);pos += 4;
-    #         var pathLength = view.getUint32(pos, true);pos += 4;
-    #         var path = String.fromCharCode.apply(null,data.subarray(pos, pos + pathLength));
-    #         pos += pathLength;
-    #         for (var folder = 0, folderNext = path.indexOf("/", folder) + 1;folderNext > 0;folder = folderNext, folderNext = path.indexOf("/", folder) + 1){
-    #         Module["FS_createPath"](path.substring(0, folder),path.substring(folder, folderNext - 1),true,true);
-    #         }
-    #         Module["FS_createDataFile"](path,null,data.slice(offset, offset + size),true,true,true);
-    #     }
-    #     '''
-    # },
 ]
 def adaptFrameworkFile(srcFilePath, dstFilePath):
     result = ""
@@ -180,7 +154,7 @@ def main():
             orientation = arg
         elif opt in ('-c', '--cdn'):
             cdn = arg
-# python WebGL2WeChat.py -a wx1a6e8263a3437579 -f webgl-disable -c http://10.86.98.91:8080/
+
     # Step 1: Get current working directory
     pythonScriptPath = os.getcwd()
 
