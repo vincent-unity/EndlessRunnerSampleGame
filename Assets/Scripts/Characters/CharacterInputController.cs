@@ -180,7 +180,6 @@ public class CharacterInputController : MonoBehaviour
 #if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
         // Use key input in editor or standalone
         // disabled if it's tutorial and not thecurrent right tutorial level (see func TutorialMoveCheck)
-
         if (Input.GetKeyDown(KeyCode.LeftArrow) && TutorialMoveCheck(0))
         {
             ChangeLane(-1);
@@ -198,7 +197,9 @@ public class CharacterInputController : MonoBehaviour
 			if(!m_Sliding)
 				Slide();
 		}
-#else
+#endif
+
+#if UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE || UNITY_WEBGL
         // Use touch input on mobile
         if (Input.touchCount == 1)
         {
